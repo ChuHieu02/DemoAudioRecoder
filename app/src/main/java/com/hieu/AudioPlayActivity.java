@@ -22,46 +22,43 @@ public class AudioPlayActivity extends AppCompatActivity {
     private Button btPlayAudio;
 
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_audio_play);
         tvAudioSong = (TextView) findViewById(R.id.tv_audioSong);
-        btPauseAudio = (Button) findViewById(R.id.bt_pause_audio);
         btPlayAudio = (Button) findViewById(R.id.bt_play_audio);
 
 
-        if (mediaPlayer!=null){
+        if (mediaPlayer != null) {
             mediaPlayer.stop();
             mediaPlayer.release();
         }
         bundle = getIntent().getExtras();
 
         final ArrayList<File> songs = (ArrayList) bundle.getParcelableArrayList("list");
-         final int position = bundle.getInt("position");
+        final int position = bundle.getInt("position");
         Uri uri = Uri.parse(songs.get(position).toString());
 
         tvAudioSong.setText(songs.get(position).getName());
 
-            mediaPlayer = mediaPlayer.create(this, uri);
-            mediaPlayer.start();
+        mediaPlayer = mediaPlayer.create(this, uri);
+        mediaPlayer.start();
 
 
-
-            btPauseAudio.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
+        btPlayAudio.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (mediaPlayer.isPlaying()) {
+                    btPlayAudio.setText("Play");
                     mediaPlayer.pause();
+                } else {
+                    btPlayAudio.setText("Pause");
+                    mediaPlayer.start();
                 }
-            });
-            btPlayAudio.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                   mediaPlayer.start();
 
-                }
-            });
+            }
+        });
     }
 
     @Override
