@@ -4,10 +4,10 @@ public class Audio {
     private String name;
     private String path;
     private String date;
-    private int duration;
-    private int size;
+    private String duration;
+    private String size;
 
-    public Audio(String name, String path, String date, int duration, int size) {
+    public Audio(String name, String path, String date, String duration, String size) {
         this.name = name;
         this.path = path;
         this.date = date;
@@ -39,19 +39,19 @@ public class Audio {
         this.date = date;
     }
 
-    public int getDuration() {
+    public String getDuration() {
         return duration;
     }
 
-    public void setDuration(int duration) {
+    public void setDuration(String duration) {
         this.duration = duration;
     }
 
-    public int getSize() {
+    public String getSize() {
         return size;
     }
 
-    public void setSize(int size) {
+    public void setSize(String size) {
         this.size = size;
     }
 }

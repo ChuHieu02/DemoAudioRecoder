@@ -2,6 +2,7 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
+        android:icon="@drawable/ic_settings_black_24dp"
         android:id="@+id/pp_edit_item_library"
         android:title="@string/pp_edit_item_library" />
     <item

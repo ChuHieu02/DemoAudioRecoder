@@ -8,4 +8,5 @@
     <dimen name="all_5dp">5dp</dimen>
     <dimen name="all_70dp">70dp</dimen>
     <dimen name="all_35dp">35dp</dimen>
+    <dimen name="all_30dp">30dp</dimen>
 </resources>

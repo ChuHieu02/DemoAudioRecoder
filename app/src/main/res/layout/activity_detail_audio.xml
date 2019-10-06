@@ -184,10 +184,11 @@
         app:layout_constraintTop_toTopOf="@+id/textView5" />
 
     <ImageView
-        android:contentDescription="@string/title_image"
+        android:src="@drawable/ic_skip_next_black_24dp"
         android:id="@+id/iv_detail_next2_audio"
         android:layout_width="@dimen/all_35dp"
         android:layout_height="@dimen/all_35dp"
+        android:contentDescription="@string/title_image"
         app:layout_constraintBottom_toBottomOf="@+id/iv_detail_next1_audio"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
@@ -195,23 +196,23 @@
         app:layout_constraintTop_toTopOf="@+id/iv_detail_next1_audio"></ImageView>
 
     <ImageView
-        android:contentDescription="@string/title_image"
-
+        android:src="@drawable/ic_skip_previous_black_24dp"
         android:id="@+id/iv_detail_prev2_audio"
         android:layout_width="@dimen/all_35dp"
         android:layout_height="@dimen/all_35dp"
         android:layout_marginBottom="100dp"
+        android:contentDescription="@string/title_image"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/iv_detail_prev1_audio"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"></ImageView>
 
     <ImageView
-        android:contentDescription="@string/title_image"
-
         android:id="@+id/iv_detail_prev1_audio"
+        android:src="@drawable/ic_fast_rewind_black_24dp"
         android:layout_width="@dimen/all_35dp"
         android:layout_height="@dimen/all_35dp"
+        android:contentDescription="@string/title_image"
         app:layout_constraintBottom_toBottomOf="@+id/iv_detail_prev2_audio"
         app:layout_constraintEnd_toStartOf="@+id/iv_detail_play_audio"
         app:layout_constraintHorizontal_bias="0.5"
@@ -219,10 +220,11 @@
         app:layout_constraintTop_toTopOf="@+id/iv_detail_prev2_audio"></ImageView>
 
     <ImageView
-        android:contentDescription="@string/title_image"
         android:id="@+id/iv_detail_play_audio"
         android:layout_width="@dimen/all_70dp"
         android:layout_height="@dimen/all_70dp"
+        android:contentDescription="@string/title_image"
+        android:src="@drawable/ic_play_arrow_black_24dp"
         app:layout_constraintBottom_toBottomOf="@+id/iv_detail_prev1_audio"
         app:layout_constraintEnd_toStartOf="@+id/iv_detail_next1_audio"
         app:layout_constraintHorizontal_bias="0.5"
@@ -230,11 +232,11 @@
         app:layout_constraintTop_toTopOf="@+id/iv_detail_prev1_audio"></ImageView>
 
     <ImageView
-        android:contentDescription="@string/title_image"
-
         android:id="@+id/iv_detail_next1_audio"
         android:layout_width="@dimen/all_35dp"
         android:layout_height="@dimen/all_35dp"
+        android:contentDescription="@string/title_image"
+        android:src="@drawable/ic_fast_forward_black_24dp"
         app:layout_constraintBottom_toBottomOf="@+id/iv_detail_play_audio"
         app:layout_constraintEnd_toStartOf="@+id/iv_detail_next2_audio"
         app:layout_constraintHorizontal_bias="0.5"
