@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/pp_edit_item_library"
+        android:title="@string/pp_edit_item_library" />
+    <item
+        android:id="@+id/pp_delete_item_library"
+        android:title="@string/pp_delete_item_library" />
+    <item
+        android:id="@+id/pp_share_item_library"
+        android:title="@string/pp_share_item_library" />
+    <item
+        android:id="@+id/pp_editContent_item_library"
+        android:title="@string/pp_editContent_item_library" />
+    <item
+        android:id="@+id/pp_setRingTone_item_library"
+        android:title="@string/pp_setRingTone_item_library" />
+
+
+</menu>

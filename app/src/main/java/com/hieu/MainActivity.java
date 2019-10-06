@@ -1,98 +1,89 @@
 package com.hieu;
 
 import android.content.Intent;
-import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Environment;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
+import android.widget.ImageView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+
+import com.hieu.activity.LibraryActivity;
+import com.hieu.activity.SettingsActivity;
 
 import java.io.File;
-import java.util.ArrayList;
 
-public class MainActivity extends AppCompatActivity {
-    private ListView rvListAudio;
-
-    private File file;
-    private String[] itemAudio;
-    private ArrayList songList;
+public class MainActivity extends AppCompatActivity implements View.OnClickListener {
+    private Toolbar toolbar;
+    private ImageView ivBottomLibrary;
+    private ImageView ivBottomRecoder;
+    private ImageView ivBottomSettings;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        MediaPlayer mediaPlayer = new MediaPlayer();
-        createFile();
-
-        rvListAudio = findViewById(R.id.rv_list_audio);
-
-        final ArrayList<File> audioSong = readAudio(Environment.getExternalStorageDirectory());
-        itemAudio = new String[audioSong.size()];
-        for (int i = 0; i < audioSong.size(); i++) {
-            itemAudio[i] = audioSong.get(i).getName() + "";
-//            itemAudio[i] = audioSong.get(i).getPath() + "";
-        }
-        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, itemAudio);
-        rvListAudio.setAdapter(arrayAdapter);
+        mappingBottomNavigation();
 
 
-        rvListAudio.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                startActivity(new Intent(getApplicationContext(), AudioPlayActivity.class).putExtra("position",i).putExtra("list", audioSong));
-            }
-        });
     }
 
+    private void mappingBottomNavigation() {
+
+        ivBottomLibrary = (ImageView) findViewById(R.id.iv_bottom_library);
+        ivBottomRecoder = (ImageView) findViewById(R.id.iv_bottom_recoder);
+        ivBottomSettings = (ImageView) findViewById(R.id.iv_bottom_settings);
+
+        ivBottomSettings.setOnClickListener(this);
+        ivBottomLibrary.setOnClickListener(this);
+
+    }
+
+
+
     private void createFile() {
-        file = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator + "Recorder");
+        File file = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator + "Recorder");
         if (!file.exists()) {
             file.mkdirs();
         }
     }
 
 
-    public ArrayList<File> readAudio(File file) {
-        ArrayList<File> arrayList = new ArrayList<>();
+    private String formatTime(long miliseconds) {
+        String finaltimeSting = "";
+        String timeSecond;
 
+        int hourse = (int) (miliseconds / (1000 * 60 * 60));
+        int minutes = (int) (miliseconds % (1000 * 60 * 60)) / (1000 * 60);
+        int seconds = (int) (miliseconds % (1000 * 60 * 60)) % (1000 * 60) / 1000;
 
-        File[] files = file.listFiles();
-
-        for (File invidualFile : files) {
-            if (invidualFile.isDirectory() && !invidualFile.isHidden()) {
-                arrayList.addAll(readAudio(invidualFile));
-
-            } else {
-                if (invidualFile.getName().endsWith(".mp3")) {
-                    arrayList.add(invidualFile);
-                }
-            }
+        if (hourse > 0) {
+            finaltimeSting = hourse + ":";
         }
-        return arrayList;
-//        final MediaPlayer mediaPlayer = new MediaPlayer();
-//        File[] files = file.listFiles();
-//
-//        for (File file1 : files) {
-//            if (file1.getPath().toLowerCase().endsWith(".mp3")) {
-//                try {
-////                    mediaPlayer.setDataSource(file1.getAbsolutePath());
-////                    mediaPlayer.prepare();
-////                    mediaPlayer.start();
-//
-//                } catch (Exception ex) {
-//
-//                }
-//                break;
-//            }
-//        }
+        if (seconds < 10) {
+            timeSecond = "0" + seconds;
 
+        } else {
+            timeSecond = "" + seconds;
+        }
+        finaltimeSting = finaltimeSting + minutes + ":" + timeSecond;
+        return finaltimeSting;
     }
 
 
+    @Override
+    public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.iv_bottom_library:
+                startActivity(new Intent(this, LibraryActivity.class));
+                break;
+            case R.id.iv_bottom_settings:
+                startActivity(new Intent(this, SettingsActivity.class));
+                break;
+        }
 
+    }
 }
