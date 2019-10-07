@@ -8,6 +8,7 @@
 
 
     <ImageView
+        android:id="@+id/iv_bg"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginBottom="@dimen/all_100dp"
@@ -44,7 +45,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="@dimen/all_10dp"
-            android:text="00 00"
+            android:text="@string/ct_recoder"
             app:layout_constraintBottom_toTopOf="@+id/include"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"

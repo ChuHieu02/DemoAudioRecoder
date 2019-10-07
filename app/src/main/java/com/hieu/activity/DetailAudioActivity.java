@@ -14,7 +14,6 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.hieu.R;
-import com.hieu.utils.CommonUtils;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
@@ -34,20 +33,22 @@ public class DetailAudioActivity extends AppCompatActivity implements View.OnCli
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_detail_audio);
+        setContentView(R.layout.activity_detail_library);
 
+        Bundle bundle = getIntent().getExtras();
         audioSong = readAudio(new File(Environment.getExternalStorageDirectory() + File.separator + "Recorder"));
+
+
         intent = getIntent();
 
         mappingTv();
-//        mediaPlayer = MediaPlayer.create(this, Uri.fromFile(audioSong.get(position)));
-        tv_duration_audio.setText(intent.getStringExtra("duration"));
-        mediaPlayer = MediaPlayer.create(this, Uri.parse(intent.getStringExtra("path")));
+        mediaPlayer = MediaPlayer.create(this, Uri.fromFile(audioSong.get(position)));
+//        mediaPlayer = MediaPlayer.create(this, Uri.parse(intent.getStringExtra("path")));
         if (mediaPlayer != null) {
             mediaPlayer.start();
             iv_detail_play_audio.setImageDrawable(getResources().getDrawable(R.drawable.ic_pause_circle_filled_black_24dp));
         }
-        if (mediaPlayer==null){
+        if (mediaPlayer == null) {
             Toast.makeText(DetailAudioActivity.this, "Play audio fail !", Toast.LENGTH_SHORT).show();
             return;
         }
@@ -58,6 +59,12 @@ public class DetailAudioActivity extends AppCompatActivity implements View.OnCli
             public void onCompletion(MediaPlayer mp) {
                 iv_detail_play_audio.setImageDrawable(getResources().getDrawable(R.drawable.ic_play_arrow_black_24dp));
 
+            }
+        });
+        mediaPlayer.setOnErrorListener(new MediaPlayer.OnErrorListener() {
+            @Override
+            public boolean onError(MediaPlayer mp, int what, int extra) {
+                return false;
             }
         });
 
@@ -90,6 +97,7 @@ public class DetailAudioActivity extends AppCompatActivity implements View.OnCli
         tv_size_audio.setText(intent.getStringExtra("size"));
         tv_path_audio.setText(intent.getStringExtra("path"));
         tv_time_audio.setText(intent.getStringExtra("date"));
+        tv_duration_audio.setText(intent.getStringExtra("duration"));
         position = intent.getIntExtra("position", 0);
 
 
@@ -142,10 +150,18 @@ public class DetailAudioActivity extends AppCompatActivity implements View.OnCli
                     mediaPlayer.stop();
                 }
                 mediaPlayer = MediaPlayer.create(this, Uri.fromFile(audioSong.get(position)));
-                mediaPlayer.start();
+                if (mediaPlayer!=null){
+                    mediaPlayer.start();
+                }
+                if (mediaPlayer == null) {
+                    Toast.makeText(DetailAudioActivity.this, "Play audio fail !", Toast.LENGTH_SHORT).show();
+                    return;
+                }
                 tv_name_audio.setText(audioSong.get(position).getName());
                 tv_path_audio.setText(audioSong.get(position).getPath());
+
 //                tv_duration_audio.setText(simpleDateFormat.format(mediaPlayer.getDuration()));
+
                 String date = dateFormat.format(audioSong.get(position).lastModified());
                 tv_time_audio.setText(date);
                 iv_detail_play_audio.setImageDrawable(getResources().getDrawable(R.drawable.ic_pause_circle_filled_black_24dp));
@@ -157,12 +173,17 @@ public class DetailAudioActivity extends AppCompatActivity implements View.OnCli
                 if (position < 0) {
                     position = audioSong.size() - 1;
                 }
-
                 if (mediaPlayer.isPlaying()) {
                     mediaPlayer.stop();
                 }
                 mediaPlayer = MediaPlayer.create(this, Uri.fromFile(audioSong.get(position)));
-                mediaPlayer.start();
+                if (mediaPlayer!=null){
+                    mediaPlayer.start();
+                }
+                if (mediaPlayer == null) {
+                    Toast.makeText(DetailAudioActivity.this, "Play audio fail !", Toast.LENGTH_SHORT).show();
+                    return;
+                }
                 tv_name_audio.setText(audioSong.get(position).getName());
                 tv_path_audio.setText(audioSong.get(position).getPath());
 //                tv_duration_audio.setText(simpleDateFormat.format(mediaPlayer.getDuration()));
@@ -188,7 +209,7 @@ public class DetailAudioActivity extends AppCompatActivity implements View.OnCli
                 arrayList.addAll(readAudio(invidualFile));
 
             } else {
-                if (invidualFile.getName().endsWith(".mp3")) {
+                if (invidualFile.getName().endsWith(".mp3") || invidualFile.getName().endsWith(".wav") || invidualFile.getName().endsWith(".wma")) {
                     arrayList.add(invidualFile);
                 }
             }

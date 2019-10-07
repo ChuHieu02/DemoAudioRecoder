@@ -8,40 +8,35 @@ import android.content.Intent;
 import android.media.MediaPlayer;
 import android.media.RingtoneManager;
 import android.net.Uri;
-import android.os.Build;
-import android.os.Environment;
 import android.provider.MediaStore;
-import android.provider.Settings;
 import android.view.LayoutInflater;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.FrameLayout;
-import android.widget.ImageView;
 import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.hieu.R;
 import com.hieu.activity.DetailAudioActivity;
 import com.hieu.model.Audio;
-import com.hieu.utils.CommonUtils;
 
 import java.io.File;
-import java.net.URI;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 
 public class LibraryAdapter extends RecyclerView.Adapter<LibraryAdapter.ViewHolder> {
     private Context context;
     private List<Audio> audioList;
+    private AlertDialog dialog;
 
+    private boolean isMp3;
 
     public LibraryAdapter(Context context, List<Audio> audioList) {
         this.context = context;
@@ -57,15 +52,17 @@ public class LibraryAdapter extends RecyclerView.Adapter<LibraryAdapter.ViewHold
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, final int position) {
-        MediaPlayer mediaPlayer;
         final Audio audio = audioList.get(position);
         holder.tv_name_item_audio.setText(audio.getName());
         holder.tv_time_item_audio.setText(audio.getDate());
         holder.tv_size_item_audio.setText(audio.getSize() + " | " + audio.getDuration());
 
+
+
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 Intent intent = new Intent(context, DetailAudioActivity.class);
                 intent.putExtra("path", audio.getPath());
                 intent.putExtra("name", audio.getName());
@@ -80,6 +77,8 @@ public class LibraryAdapter extends RecyclerView.Adapter<LibraryAdapter.ViewHold
         holder.iv_setting_item_audio.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+//                Toast.makeText(context, "" + audio.getDuration(), Toast.LENGTH_SHORT).show();
+
                 PopupMenu popup = new PopupMenu(context, v);
                 MenuInflater inflater = popup.getMenuInflater();
                 inflater.inflate(R.menu.popup_menu, popup.getMenu());
@@ -113,31 +112,72 @@ public class LibraryAdapter extends RecyclerView.Adapter<LibraryAdapter.ViewHold
                                 builder.create().show();
                                 break;
                             case R.id.pp_share_item_library:
-//                                Intent shareIntent = new Intent();
-//                                shareIntent.setAction(Intent.ACTION_SEND);
-//                                shareIntent.setType("audio/*");
-//                                shareIntent.putExtra(Intent.EXTRA_STREAM,Uri.fromFile(new File(audio.getPath())));
-//                                context.startActivity(Intent.createChooser(shareIntent, audio.getName()));
 
-                                Intent intentShareFile = new Intent(Intent.ACTION_SEND);
-                                File fileWithinMyDir = new File(audio.getPath());
-                                intentShareFile.setData(Uri.fromFile(fileWithinMyDir));
-                                if (fileWithinMyDir.exists()) {
-                                    intentShareFile.setType("audio/*");
-                                    context.startActivity(Intent.createChooser(intentShareFile, "Open file"));
-                                } else {
-                                    Toast.makeText(context, "not file ", Toast.LENGTH_SHORT).show();
-                                }
+                                Intent intent = new Intent();
+                                intent.setAction("android.intent.action.SEND");
+                                intent.setType("audio/*");
+                                intent.putExtra("android.intent.extra.STREAM", Uri.fromFile(new File(audio.getPath())));
+                                context.startActivity(Intent.createChooser(intent, ""));
+
                                 break;
                             case R.id.pp_edit_item_library:
-                                File file = new File(audio.getName());
-                                File file2 = new File("Co gai m52");
-                                boolean success = file.renameTo(file2);
-                                if (success) {
-                                    Toast.makeText(context, "Success", Toast.LENGTH_SHORT).show();
-                                } else {
-                                    Toast.makeText(context, "Fail", Toast.LENGTH_SHORT).show();
-                                }
+                                final AlertDialog.Builder builder2 = new AlertDialog.Builder(context);
+                                final View viewDialog = LayoutInflater.from(context).inflate(R.layout.dialog_rename_library, null);
+                                builder2.setView(viewDialog);
+
+                                final EditText ed_name_item_library;
+                                Button bt_yes, bt_no;
+
+                                ed_name_item_library = viewDialog.findViewById(R.id.ed_name_item_library);
+                                bt_no = viewDialog.findViewById(R.id.bt_no);
+                                bt_yes = viewDialog.findViewById(R.id.bt_yes);
+
+                                ed_name_item_library.setText(audio.getName().substring(0, audio.getName().lastIndexOf(".")));
+
+
+                                bt_no.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        dialog.dismiss();
+                                    }
+                                });
+                                bt_yes.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        isMp3 = audio.getName().endsWith(".mp3");
+                                        if (isMp3) {
+                                            File file = new File(audio.getPath());
+                                            File file2 = new File(file.getParent() + File.separator + ed_name_item_library.getText().toString() + ".mp3");
+                                            boolean success = file.renameTo(file2);
+                                            if (success) {
+                                                file.delete();
+                                                notifyDataSetChanged();
+                                                dialog.dismiss();
+                                                Toast.makeText(context, "Success", Toast.LENGTH_SHORT).show();
+                                            } else {
+                                                dialog.dismiss();
+                                                Toast.makeText(context, "Fail", Toast.LENGTH_SHORT).show();
+                                            }
+                                        } else {
+
+                                            File file = new File(audio.getPath());
+                                            File file2 = new File(file.getParent() + File.separator + ed_name_item_library.getText().toString() + ".wav");
+                                            boolean success = file.renameTo(file2);
+                                            if (success) {
+                                                file.delete();
+                                                notifyDataSetChanged();
+                                                dialog.dismiss();
+                                                Toast.makeText(context, "Success", Toast.LENGTH_SHORT).show();
+                                            } else {
+                                                dialog.dismiss();
+                                                Toast.makeText(context, "Fail", Toast.LENGTH_SHORT).show();
+                                            }
+                                        }
+                                    }
+                                });
+                                builder2.create();
+                                dialog = builder2.show();
+
                                 break;
                             case R.id.pp_editContent_item_library:
                                 break;
@@ -154,12 +194,13 @@ public class LibraryAdapter extends RecyclerView.Adapter<LibraryAdapter.ViewHold
                                 values.put(MediaStore.Audio.AudioColumns.IS_ALARM, false);
                                 values.put(MediaStore.Audio.AudioColumns.IS_MUSIC, false);
 
-                                Uri uri = MediaStore.Audio.Media.getContentUriForPath(audio.getPath());
-                                context.getContentResolver().delete(uri, MediaStore.MediaColumns.DATA + "=\"" + audio.getPath() + "\"", null);
+                                Uri uri_ringtone = MediaStore.Audio.Media.getContentUriForPath(audio.getPath());
+                                context.getContentResolver().
 
-                                Uri newUri = context.getContentResolver().insert(uri, values);
+                                        delete(uri_ringtone, MediaStore.MediaColumns.DATA + "=\"" + audio.getPath() + "\"", null);
 
-                                //Ok now set the ringtone from the content manager's uri, NOT the file's uri
+                                Uri newUri = context.getContentResolver().insert(uri_ringtone, values);
+
                                 RingtoneManager.setActualDefaultRingtoneUri(context, RingtoneManager.TYPE_RINGTONE, newUri);
 
                                 break;
@@ -168,33 +209,10 @@ public class LibraryAdapter extends RecyclerView.Adapter<LibraryAdapter.ViewHold
                     }
                 });
                 popup.show();
-
-                /*share*/
-//                Intent shareIntent = new Intent();
-//                shareIntent.setAction(Intent.ACTION_SEND);
-//                shareIntent.putExtra(Intent.EXTRA_STREAM, file.getPath());
-//                shareIntent.setType("audio/mpeg");
-//                context.startActivity(Intent.createChooser(shareIntent, null));
-
-                /*delete*/
-//                new File(file.getPath()).delete();
-                /*rename*/
-//                String nameOldFile = file.getName();
-//                File file = new File(nameOldFile);
-//                File file2 = new File("Co gai m52");
-//                boolean success = file.renameTo(file2);
-//                if (success){
-//                    Toast.makeText(context, "thanh cong", Toast.LENGTH_SHORT).show();
-//                }else {
-//                    Toast.makeText(context, "false", Toast.LENGTH_SHORT).show();
-//                }
             }
         });
     }
 
-    public void setActualDefaultRingtoneUri(Context context, int type, Uri ringtoneUri) {
-
-    }
 
     @Override
     public int getItemCount() {
@@ -215,5 +233,6 @@ public class LibraryAdapter extends RecyclerView.Adapter<LibraryAdapter.ViewHold
             iv_setting_item_audio = itemView.findViewById(R.id.iv_setting_item_audio);
         }
     }
+
 }
 

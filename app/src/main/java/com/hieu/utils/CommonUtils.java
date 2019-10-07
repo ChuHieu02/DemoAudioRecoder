@@ -7,9 +7,9 @@ public class CommonUtils {
 
 
 
-    public static String formarttoMoney(String data) {
+    public static String formatToNumber(String data) {
         NumberFormat numberFormat = new DecimalFormat("###,###,###");
-        return numberFormat.format(Double.parseDouble(data));
+        return numberFormat.format(Long.parseLong(data));
     }
 
     public static String formatTime(long miliseconds) {

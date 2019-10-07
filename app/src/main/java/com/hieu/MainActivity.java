@@ -16,8 +16,10 @@ import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
+import com.bumptech.glide.Glide;
 import com.hieu.activity.LibraryActivity;
 import com.hieu.activity.SettingsActivity;
+import com.squareup.picasso.Picasso;
 
 import java.io.File;
 import java.io.IOException;
@@ -28,10 +30,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private ImageView ivBottomRecoder;
     private ImageView ivBottomSettings;
     private MediaRecorder mAudioRecorder;
-    private ImageView ivRecord , ivPauseResume;
+    private ImageView ivRecord , ivPauseResume , iv_bg;
     private String outputFile;
     private int recordingStatus;
     private int pauseStatus;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,8 +54,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         ivBottomRecoder = (ImageView) findViewById(R.id.iv_bottom_recoder);
         ivBottomSettings = (ImageView) findViewById(R.id.iv_bottom_settings);
 
+        iv_bg = (ImageView) findViewById(R.id.iv_bg);
         ivPauseResume =(ImageView) findViewById(R.id.imageViewPauseResume);
         ivRecord =(ImageView) findViewById(R.id.imageViewRecord);
+
+
         ivPauseResume.setEnabled(false);
 
         ivBottomSettings.setOnClickListener(this);
@@ -63,8 +69,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 
     private void createFile() {
-        File file = new File(Environment.getExternalStorageDirectory(),"DemoRecorderApp");
-        outputFile ="/"+ file.getAbsolutePath()+"/RecordFile"+System.currentTimeMillis()+".mp3";
+        File file = new File(Environment.getExternalStorageDirectory() + File.separator + "Recorder");
+        outputFile ="/"+ file.getAbsolutePath()+"/RecordFile"+System.currentTimeMillis()+".wav";
         if (!file.exists()) {
             file.mkdirs();
         }
@@ -86,7 +92,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private  void  setupMediaRecorder(){
         mAudioRecorder = new MediaRecorder();
         mAudioRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-        mAudioRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
+        mAudioRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
         mAudioRecorder.setAudioEncoder(MediaRecorder.OutputFormat.AMR_NB);
         mAudioRecorder.setOutputFile(outputFile);
     }
@@ -149,7 +155,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             public void onClick(View view) {
                 if(recordingStatus == 0){
                     startRecording();
-                    ivRecord.setImageResource(R.drawable.ic_home_pause);
+                    ivRecord.setImageResource(R.drawable.ic_play_record_pr);
                     recordingStatus =1;
                     pauseStatus = 0;
                     ivPauseResume.setImageResource(R.drawable.ic_home_pause);

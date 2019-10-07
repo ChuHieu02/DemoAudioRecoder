@@ -1,17 +1,6 @@
 package com.hieu.activity;
 
-import androidx.annotation.RequiresApi;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.Manifest;
-import android.app.Activity;
-import android.app.AlertDialog;
-import android.app.FragmentManager;
 import android.content.ContentResolver;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -23,15 +12,18 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.provider.Settings;
-import android.widget.Toast;
 
-import com.hieu.MainActivity;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.hieu.R;
 import com.hieu.adapter.LibraryAdapter;
 import com.hieu.model.Audio;
+import com.hieu.utils.CommonUtils;
 
 import java.io.File;
-import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -46,6 +38,7 @@ public class LibraryActivity extends AppCompatActivity {
     private SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
     private MediaPlayer mediaPlayer;
     private static final int PERMISSION_REQUEST_CODE = 1000;
+    String isTail;
 
 
     private boolean openAndroidPermissionsWriteSetting() {
@@ -75,7 +68,6 @@ public class LibraryActivity extends AppCompatActivity {
     }
 
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -97,16 +89,18 @@ public class LibraryActivity extends AppCompatActivity {
             long date = file.lastModified();
             long size = file.length();
 
-            String formatSize = String.valueOf(size / 1024);
+            isTail = String.valueOf(file.getTotalSpace());
+            String formatSize = (CommonUtils.formatToNumber(String.valueOf(size / 1024)));
             String formatDate = String.valueOf(dateFormat.format(date));
 
-            Audio audio = new Audio(name, path, formatDate, "", formatSize + " kb");
+            Audio audio = new Audio(name, path, formatDate,"", formatSize + " kb", isTail);
             audioList.add(audio);
         }
         layoutManager = new LinearLayoutManager(this);
         rvLibrary.setLayoutManager(layoutManager);
         adapter = new LibraryAdapter(this, audioList);
         rvLibrary.setAdapter(adapter);
+
     }
 
 
@@ -142,7 +136,7 @@ public class LibraryActivity extends AppCompatActivity {
                 arrayList.addAll(readAudio(invidualFile));
 
             } else {
-                if (invidualFile.getName().endsWith(".mp3") || invidualFile.getName().endsWith(".wav") || invidualFile.getName().endsWith(".wma")) {
+                if (invidualFile.getName().endsWith(".mp3") || invidualFile.getName().endsWith(".wav") ) {
                     arrayList.add(invidualFile);
                 }
             }
