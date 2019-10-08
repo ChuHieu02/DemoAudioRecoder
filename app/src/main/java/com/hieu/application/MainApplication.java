@@ -1,4 +1,4 @@
-package com.hieu;
+package com.hieu.application;
 
 import android.app.Application;
 import android.os.StrictMode;

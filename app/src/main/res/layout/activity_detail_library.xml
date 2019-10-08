@@ -184,11 +184,11 @@
         app:layout_constraintTop_toTopOf="@+id/textView5" />
 
     <ImageView
-        android:src="@drawable/ic_skip_next_black_24dp"
         android:id="@+id/iv_detail_next2_audio"
         android:layout_width="@dimen/all_35dp"
         android:layout_height="@dimen/all_35dp"
         android:contentDescription="@string/title_image"
+        android:src="@drawable/ic_skip_next_black_24dp"
         app:layout_constraintBottom_toBottomOf="@+id/iv_detail_next1_audio"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
@@ -196,12 +196,12 @@
         app:layout_constraintTop_toTopOf="@+id/iv_detail_next1_audio"></ImageView>
 
     <ImageView
-        android:src="@drawable/ic_skip_previous_black_24dp"
         android:id="@+id/iv_detail_prev2_audio"
         android:layout_width="@dimen/all_35dp"
         android:layout_height="@dimen/all_35dp"
         android:layout_marginBottom="100dp"
         android:contentDescription="@string/title_image"
+        android:src="@drawable/ic_skip_previous_black_24dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/iv_detail_prev1_audio"
         app:layout_constraintHorizontal_bias="0.5"
@@ -209,10 +209,10 @@
 
     <ImageView
         android:id="@+id/iv_detail_prev1_audio"
-        android:src="@drawable/ic_fast_rewind_black_24dp"
         android:layout_width="@dimen/all_35dp"
         android:layout_height="@dimen/all_35dp"
         android:contentDescription="@string/title_image"
+        android:src="@drawable/ic_fast_rewind_black_24dp"
         app:layout_constraintBottom_toBottomOf="@+id/iv_detail_prev2_audio"
         app:layout_constraintEnd_toStartOf="@+id/iv_detail_play_audio"
         app:layout_constraintHorizontal_bias="0.5"
@@ -252,7 +252,26 @@
         android:layout_marginEnd="16dp"
         android:layout_marginRight="16dp"
         android:layout_marginBottom="16dp"
-        app:layout_constraintBottom_toTopOf="@+id/iv_detail_play_audio"
+        app:layout_constraintBottom_toTopOf="@+id/tv_detail_dration_stop"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/tv_detail_dration_start"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:text="@string/tv_dtail_time_start_stop"
+        app:layout_constraintBottom_toTopOf="@+id/iv_detail_play_audio"
+        app:layout_constraintStart_toStartOf="@+id/seekBar_detail" />
+
+    <TextView
+        android:id="@+id/tv_detail_dration_stop"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:text="@string/tv_dtail_time_start_stop"
+        app:layout_constraintBottom_toTopOf="@+id/iv_detail_play_audio"
+        app:layout_constraintEnd_toEndOf="@+id/seekBar_detail" />
 </androidx.constraintlayout.widget.ConstraintLayout>

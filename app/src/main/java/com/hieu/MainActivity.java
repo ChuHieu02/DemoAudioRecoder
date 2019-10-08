@@ -128,11 +128,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
     @RequiresApi(api = Build.VERSION_CODES.N)
     private void stopRecording(){
-        if (mAudioRecorder!=null){
-            mAudioRecorder.stop();
-            mAudioRecorder.release();
-            mAudioRecorder = null;
-            Toast.makeText(getApplicationContext(), "Audio Recorder successfully", Toast.LENGTH_LONG).show();
+        try {
+            if (mAudioRecorder!=null ){
+                mAudioRecorder.stop();
+                mAudioRecorder.release();
+                mAudioRecorder = null;
+            }
+        }catch (Exception e){
+
         }
     }
 
@@ -142,7 +145,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             mediaPlayer.setDataSource(outputFile);
             mediaPlayer.prepare();
             mediaPlayer.start();
-            Toast.makeText(getApplicationContext(), "Playing Audio", Toast.LENGTH_LONG).show();
         } catch (Exception e) {
             // make something
         }
@@ -181,13 +183,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     pauseRecording();
                     pauseStatus = 1;
                     ivPauseResume.setImageResource(R.drawable.ic_home_play);
-                    Toast.makeText(getApplicationContext(), "Pause Recording", Toast.LENGTH_LONG).show();
                 }else{
                     if(pauseStatus == 1){
                         resumeRecording();
                         pauseStatus = 0;
                         ivPauseResume.setImageResource(R.drawable.ic_home_pause);
-                        Toast.makeText(getApplicationContext(), "Resume Recording", Toast.LENGTH_LONG).show();
                     }
                 }
             }
@@ -195,26 +195,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
 
-    private String formatTime(long miliseconds) {
-        String finaltimeSting = "";
-        String timeSecond;
-
-        int hourse = (int) (miliseconds / (1000 * 60 * 60));
-        int minutes = (int) (miliseconds % (1000 * 60 * 60)) / (1000 * 60);
-        int seconds = (int) (miliseconds % (1000 * 60 * 60)) % (1000 * 60) / 1000;
-
-        if (hourse > 0) {
-            finaltimeSting = hourse + ":";
-        }
-        if (seconds < 10) {
-            timeSecond = "0" + seconds;
-
-        } else {
-            timeSecond = "" + seconds;
-        }
-        finaltimeSting = finaltimeSting + minutes + ":" + timeSecond;
-        return finaltimeSting;
-    }
 
 
     @Override

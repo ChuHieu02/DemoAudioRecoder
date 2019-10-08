@@ -6,26 +6,18 @@ public class Audio {
     private String date;
     private String duration;
     private String size;
-    private String isTail;
 
 
 
-    public Audio(String name, String path, String date, String duration, String size, String isTail) {
+    public Audio(String name, String path, String date, String duration, String size) {
         this.name = name;
         this.path = path;
         this.date = date;
         this.duration = duration;
         this.size = size;
-        this.isTail = isTail;
     }
 
-    public String getIsTail() {
-        return isTail;
-    }
 
-    public void setIsTail(String isTail) {
-        this.isTail = isTail;
-    }
 
     public String getName() {
         return name;

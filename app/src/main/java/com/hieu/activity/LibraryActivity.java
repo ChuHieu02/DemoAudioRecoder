@@ -5,6 +5,7 @@ import android.content.ContentResolver;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.media.MediaMetadataRetriever;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Build;
@@ -12,6 +13,8 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.provider.Settings;
+import android.util.Log;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -38,7 +41,7 @@ public class LibraryActivity extends AppCompatActivity {
     private SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
     private MediaPlayer mediaPlayer;
     private static final int PERMISSION_REQUEST_CODE = 1000;
-    String isTail;
+    String formatDuration = "";
 
 
     private boolean openAndroidPermissionsWriteSetting() {
@@ -63,6 +66,8 @@ public class LibraryActivity extends AppCompatActivity {
             if (checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
                 requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
                         PERMISSION_REQUEST_CODE);
+            } else {
+
             }
         }
     }
@@ -82,25 +87,73 @@ public class LibraryActivity extends AppCompatActivity {
         openAndroidPermissionsWriteStorage();
 
         final ArrayList<File> audioSong = readAudio(new File(Environment.getExternalStorageDirectory() + File.separator + "Recorder"));
+        MediaMetadataRetriever metaRetriever = new MediaMetadataRetriever();
         for (int i = 0; i < audioSong.size(); i++) {
             File file = audioSong.get(i);
             String path = file.getAbsolutePath();
             String name = file.getName();
             long date = file.lastModified();
             long size = file.length();
-
-            isTail = String.valueOf(file.getTotalSpace());
-            String formatSize = (CommonUtils.formatToNumber(String.valueOf(size / 1024)));
-            String formatDate = String.valueOf(dateFormat.format(date));
-
-            Audio audio = new Audio(name, path, formatDate,"", formatSize + " kb", isTail);
+            formatDuration = CommonUtils.GetDuration(file.getPath());
+//            try {
+//                metaRetriever.setDataSource("");
+//                String duration = metaRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
+//                long dur = Long.parseLong(duration);
+//                formatDuration = String.valueOf(CommonUtils.formatTime(dur));
+//
+//            } catch (Exception e) {
+//
+//            }
+            Audio audio = new Audio(name, path, CommonUtils.fomatDate(date), formatDuration, CommonUtils.fomatSize(size));
             audioList.add(audio);
         }
+
+        metaRetriever.release();
+
+        setDataAdapter();
+        adapter.setOnclickItem(new LibraryAdapter.OnclickItem() {
+            @Override
+            public void onClick(int i) {
+//                Intent intent = new Intent(LibraryActivity.this,DetailAudioActivity.class);
+//                Bundle bundle = new Bundle();
+//                bundle.putInt("position", i);
+//
+//                intent.putExtras(bundle);
+//                startActivity(intent);
+
+                startActivity(new Intent(LibraryActivity.this, DetailAudioActivity.class).putExtra("position", i).putExtra("list", audioSong));
+            }
+        });
+        adapter.setOnclickItemRefesh(new LibraryAdapter.OnclickItemRefesh() {
+            @Override
+            public void onClick(int i) {
+
+            }
+        });
+//        final ArrayList<File> audioSong = readAudio(new File(Environment.getExternalStorageDirectory() + File.separator + "Recorder"));
+//        for (int i = 0; i < audioSong.size(); i++) {
+//            File file = audioSong.get(i);
+//            String path = file.getAbsolutePath();
+//            String name = file.getName();
+//            long date = file.lastModified();
+//            long size = file.length();
+//
+//            String formatSize = (CommonUtils.formatToNumber(String.valueOf(size / 1024)) + " kb");
+//            String formatDate = String.valueOf(dateFormat.format(date));
+//
+//
+//            Audio audio = new Audio(name, path, formatDate, "", formatSize);
+//            audioList.add(audio);
+//
+//        }
+
+    }
+
+    private void setDataAdapter() {
         layoutManager = new LinearLayoutManager(this);
         rvLibrary.setLayoutManager(layoutManager);
         adapter = new LibraryAdapter(this, audioList);
         rvLibrary.setAdapter(adapter);
-
     }
 
 
@@ -136,7 +189,7 @@ public class LibraryActivity extends AppCompatActivity {
                 arrayList.addAll(readAudio(invidualFile));
 
             } else {
-                if (invidualFile.getName().endsWith(".mp3") || invidualFile.getName().endsWith(".wav") ) {
+                if (invidualFile.getName().endsWith(".mp3") || invidualFile.getName().endsWith(".wav")) {
                     arrayList.add(invidualFile);
                 }
             }
@@ -147,6 +200,7 @@ public class LibraryActivity extends AppCompatActivity {
     private void getAudio() {
         ContentResolver cr = getContentResolver();
         Uri uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
+
         Cursor cur = cr.query(uri, null, null, null, null);
         int count = 0;
         if (cur != null) {
@@ -159,12 +213,19 @@ public class LibraryActivity extends AppCompatActivity {
                     String date = cur.getString(cur.getColumnIndex(MediaStore.Audio.Media.DATE_MODIFIED));
                     String size = cur.getString(cur.getColumnIndex(MediaStore.Audio.Media.SIZE));
 
-                    String fomartDate = dateFormat.format(Long.parseLong(date));
-                    String formatTime = timeformat.format(Long.parseLong(duration));
+                    String fomartDate = dateFormat.format(Long.parseLong(date) * 1000);
+                    String formatTime = CommonUtils.formatTime(Long.parseLong(duration));
                     int formatSize = Integer.parseInt(size) / 1024;
 
-//                    Audio audio = new Audio(name, data, fomartDate, formatTime, formatSize);
-//                    audioList.add(audio);
+                    if (data.endsWith(".mp3") || data.endsWith(".wav")) {
+//                       Audio audioFile = new Audio(name, data, String.valueOf(fomartDate), "", formatSize);
+//                       audioList.add(audioFile);
+                        Log.e("date", fomartDate);
+                        Log.e("size", formatSize + "");
+                        Log.e("time", formatTime);
+                        Log.e("path", data);
+                        Log.e("name", name);
+                    }
                 }
             }
         }
