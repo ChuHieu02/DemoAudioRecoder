@@ -95,15 +95,7 @@ public class LibraryActivity extends AppCompatActivity {
             long date = file.lastModified();
             long size = file.length();
             formatDuration = CommonUtils.GetDuration(file.getPath());
-//            try {
-//                metaRetriever.setDataSource("");
-//                String duration = metaRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
-//                long dur = Long.parseLong(duration);
-//                formatDuration = String.valueOf(CommonUtils.formatTime(dur));
-//
-//            } catch (Exception e) {
-//
-//            }
+
             Audio audio = new Audio(name, path, CommonUtils.fomatDate(date), formatDuration, CommonUtils.fomatSize(size));
             audioList.add(audio);
         }
@@ -114,12 +106,7 @@ public class LibraryActivity extends AppCompatActivity {
         adapter.setOnclickItem(new LibraryAdapter.OnclickItem() {
             @Override
             public void onClick(int i) {
-//                Intent intent = new Intent(LibraryActivity.this,DetailAudioActivity.class);
-//                Bundle bundle = new Bundle();
-//                bundle.putInt("position", i);
-//
-//                intent.putExtras(bundle);
-//                startActivity(intent);
+
 
                 startActivity(new Intent(LibraryActivity.this, DetailAudioActivity.class).putExtra("position", i).putExtra("list", audioSong));
             }
@@ -130,22 +117,7 @@ public class LibraryActivity extends AppCompatActivity {
 
             }
         });
-//        final ArrayList<File> audioSong = readAudio(new File(Environment.getExternalStorageDirectory() + File.separator + "Recorder"));
-//        for (int i = 0; i < audioSong.size(); i++) {
-//            File file = audioSong.get(i);
-//            String path = file.getAbsolutePath();
-//            String name = file.getName();
-//            long date = file.lastModified();
-//            long size = file.length();
-//
-//            String formatSize = (CommonUtils.formatToNumber(String.valueOf(size / 1024)) + " kb");
-//            String formatDate = String.valueOf(dateFormat.format(date));
-//
-//
-//            Audio audio = new Audio(name, path, formatDate, "", formatSize);
-//            audioList.add(audio);
-//
-//        }
+
 
     }
 

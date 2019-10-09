@@ -186,7 +186,7 @@ public class LibraryAdapter extends RecyclerView.Adapter<LibraryAdapter.ViewHold
                                             File file = new File(audio.getPath());
                                             File file2 = new File(file.getParent() + File.separator + ed_name_item_library.getText().toString() + ".wav");
                                             if (file2.exists()) {
-                                                Toast.makeText(context, "Audio name exist", Toast.LENGTH_SHORT).show();
+                                                Toast.makeText(context, "The name exist", Toast.LENGTH_SHORT).show();
                                             } else {
                                                 boolean success = file.renameTo(file2);
                                                 if (success) {
