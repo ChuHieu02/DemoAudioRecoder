@@ -12,7 +12,6 @@ import android.widget.Toast;
 
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 
 import com.hieu.activity.LibraryActivity;
 import com.hieu.activity.SettingsActivity;
@@ -21,7 +20,6 @@ import java.io.File;
 import java.io.IOException;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
-    private Toolbar toolbar;
     private ImageView ivBottomLibrary;
     private ImageView ivBottomRecoder;
     private ImageView ivBottomSettings;
@@ -46,13 +44,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private void mappingBottomNavigation() {
 
-        ivBottomLibrary = (ImageView) findViewById(R.id.iv_bottom_library);
-        ivBottomRecoder = (ImageView) findViewById(R.id.iv_bottom_recoder);
-        ivBottomSettings = (ImageView) findViewById(R.id.iv_bottom_settings);
+        ivBottomLibrary =  findViewById(R.id.iv_bottom_library);
+        ivBottomRecoder =  findViewById(R.id.iv_bottom_recoder);
+        ivBottomSettings =  findViewById(R.id.iv_bottom_settings);
 
-        iv_bg = (ImageView) findViewById(R.id.iv_bg);
-        ivPauseResume =(ImageView) findViewById(R.id.imageViewPauseResume);
-        ivRecord =(ImageView) findViewById(R.id.imageViewRecord);
+        iv_bg =  findViewById(R.id.iv_bg);
+        ivPauseResume = findViewById(R.id.imageViewPauseResume);
+        ivRecord = findViewById(R.id.imageViewRecord);
 
 
         ivPauseResume.setEnabled(false);
@@ -189,8 +187,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         });
     }
-
-
 
 
     @Override

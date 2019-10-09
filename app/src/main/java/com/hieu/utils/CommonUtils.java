@@ -9,25 +9,23 @@ import java.util.List;
 
 public class CommonUtils {
 
-    private String durationRespon;
-    private String duration;
 
     public static String fomatDate(long date) {
-        String dateRespon = "";
+        String dateRespon ;
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
         dateRespon = dateFormat.format(date);
         return dateRespon;
     }
 
-    public static String fomatSize(long size) {
-        String sizeRespon = "";
-        sizeRespon = String.valueOf(size / 1024) + " kb";
+    public static long fomatSize(long size) {
+        long sizeRespon ;
+        sizeRespon = (size / 1024);
         return sizeRespon;
     }
 
-    public static String formatToNumber(String data) {
+    public static String formatToNumber(long data) {
         NumberFormat numberFormat = new DecimalFormat("###,###,###");
-        return numberFormat.format(Long.parseLong(data));
+        return numberFormat.format((data));
     }
 
     public static String formatTime(long miliseconds) {

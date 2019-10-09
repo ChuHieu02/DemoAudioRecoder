@@ -14,6 +14,8 @@ import android.os.Environment;
 import android.provider.MediaStore;
 import android.provider.Settings;
 import android.util.Log;
+import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -36,12 +38,10 @@ public class LibraryActivity extends AppCompatActivity {
     private RecyclerView rvLibrary;
     private LibraryAdapter adapter;
     private LinearLayoutManager layoutManager;
-    private List<Audio> audioList = new ArrayList<>();
-    private SimpleDateFormat timeformat = new SimpleDateFormat("mm:ss");
-    private SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
-    private MediaPlayer mediaPlayer;
+    private ArrayList<Audio> audioList = new ArrayList<>();
     private static final int PERMISSION_REQUEST_CODE = 1000;
-    String formatDuration = "";
+    private String formatDuration = "";
+    private TextView tv_library_empty;
 
 
     private boolean openAndroidPermissionsWriteSetting() {
@@ -80,7 +80,7 @@ public class LibraryActivity extends AppCompatActivity {
 
         mappingToolbar();
 
-        mappingRecyclerView();
+        mapping();
 
         openAndroidPermissionsWriteSetting();
 
@@ -95,8 +95,9 @@ public class LibraryActivity extends AppCompatActivity {
             long date = file.lastModified();
             long size = file.length();
             formatDuration = CommonUtils.GetDuration(file.getPath());
+            String fomatSize = CommonUtils.formatToNumber(CommonUtils.fomatSize(size)) + " kb";
 
-            Audio audio = new Audio(name, path, CommonUtils.fomatDate(date), formatDuration, CommonUtils.fomatSize(size));
+            Audio audio = new Audio(name, path, CommonUtils.fomatDate(date), formatDuration, fomatSize);
             audioList.add(audio);
         }
 
@@ -106,9 +107,7 @@ public class LibraryActivity extends AppCompatActivity {
         adapter.setOnclickItem(new LibraryAdapter.OnclickItem() {
             @Override
             public void onClick(int i) {
-
-
-                startActivity(new Intent(LibraryActivity.this, DetailAudioActivity.class).putExtra("position", i).putExtra("list", audioSong));
+                startActivity(new Intent(LibraryActivity.this, DetailAudioActivity.class).putExtra("position", i).putParcelableArrayListExtra("list", audioList));
             }
         });
         adapter.setOnclickItemRefesh(new LibraryAdapter.OnclickItemRefesh() {
@@ -125,11 +124,20 @@ public class LibraryActivity extends AppCompatActivity {
         layoutManager = new LinearLayoutManager(this);
         rvLibrary.setLayoutManager(layoutManager);
         adapter = new LibraryAdapter(this, audioList);
+        if (audioList.size() == 0) {
+            tv_library_empty.setVisibility(View.VISIBLE);
+            rvLibrary.setVisibility(View.GONE);
+        } else {
+            tv_library_empty.setVisibility(View.GONE);
+            rvLibrary.setVisibility(View.VISIBLE);
+
+        }
         rvLibrary.setAdapter(adapter);
     }
 
 
-    private void mappingRecyclerView() {
+    private void mapping() {
+        tv_library_empty = findViewById(R.id.tv_library_empty);
         rvLibrary = (RecyclerView) findViewById(R.id.rv_library);
         rvLibrary.setHasFixedSize(true);
     }
@@ -185,7 +193,7 @@ public class LibraryActivity extends AppCompatActivity {
                     String date = cur.getString(cur.getColumnIndex(MediaStore.Audio.Media.DATE_MODIFIED));
                     String size = cur.getString(cur.getColumnIndex(MediaStore.Audio.Media.SIZE));
 
-                    String fomartDate = dateFormat.format(Long.parseLong(date) * 1000);
+                    String fomartDate = CommonUtils.fomatDate(Long.parseLong(date) * 1000);
                     String formatTime = CommonUtils.formatTime(Long.parseLong(duration));
                     int formatSize = Integer.parseInt(size) / 1024;
 

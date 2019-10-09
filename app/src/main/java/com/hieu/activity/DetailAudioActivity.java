@@ -3,6 +3,7 @@ package com.hieu.activity;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.SeekBar;
@@ -10,32 +11,36 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
+import androidx.fragment.app.Fragment;
 import androidx.viewpager.widget.ViewPager;
 
 import com.hieu.R;
 import com.hieu.adapter.SectionsPagerAdapter;
 import com.hieu.fragment.FragmentDetailInformation;
-import com.hieu.utils.CommonUtils;
+import com.hieu.fragment.FragmentDetailListAudio;
+import com.hieu.model.Audio;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.List;
 
 import me.relex.circleindicator.CircleIndicator;
 
-public class DetailAudioActivity extends AppCompatActivity implements View.OnClickListener {
-    private TextView tv_name_audio, tv_path_audio, tv_size_audio, tv_time_audio, tv_duration_audio;
+
+public class DetailAudioActivity extends AppCompatActivity implements View.OnClickListener, FragmentDetailListAudio.FragmentDetailListListener {
     private ImageView iv_detail_play_audio, iv_detail_next1_audio, iv_detail_next2_audio, iv_detail_prev1_audio, iv_detail_prev2_audio;
     private MediaPlayer mediaPlayer;
     private int position;
-    private ArrayList<File> listFile;
+    private ArrayList<Audio> listAudio;
     private SeekBar seekBarDetail;
-    private File file;
+    private Audio audio;
     private Bundle bundle;
     private Thread thread;
     private SimpleDateFormat fomatTime = new SimpleDateFormat("mm:ss");
     private TextView tv_detail_dration_start, tv_detail_dration_stop;
+    private FragmentDetailInformation fragmentDetailInformation;
+    private FragmentDetailListAudio fragmentDetailListAudio;
 
 
     @Override
@@ -43,22 +48,28 @@ public class DetailAudioActivity extends AppCompatActivity implements View.OnCli
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail_library);
 
-        SectionsPagerAdapter sectionsPagerAdapter = new SectionsPagerAdapter(this, getSupportFragmentManager());
+
+        bundle = getIntent().getExtras();
+
+        if (bundle != null) {
+            listAudio = bundle.getParcelableArrayList("list");
+            position = bundle.getInt("position");
+        }
+        audio = listAudio.get(position);
+
+        this.fragmentDetailInformation = new FragmentDetailInformation().setArguments(audio);
+        this.fragmentDetailListAudio = new FragmentDetailListAudio().setArguments(listAudio);
+
+        List<Fragment> dataFragment = new ArrayList<>();
+        dataFragment.add(fragmentDetailInformation);
+        dataFragment.add(fragmentDetailListAudio);
+        SectionsPagerAdapter sectionsPagerAdapter = new SectionsPagerAdapter(this, getSupportFragmentManager(), dataFragment);
         ViewPager viewPager = findViewById(R.id.vp_detail);
         viewPager.setAdapter(sectionsPagerAdapter);
         CircleIndicator indicator = findViewById(R.id.indicator);
         indicator.setViewPager(viewPager);
 
-        bundle = getIntent().getExtras();
-
-        listFile = (ArrayList) bundle.getParcelableArrayList("list");
-        if (listFile == null) {
-            return;
-        }
-        position = bundle.getInt("position");
-        file = listFile.get(position);
-
-        mediaPlayer = MediaPlayer.create(this, Uri.fromFile(listFile.get(position)));
+        this.mediaPlayer = MediaPlayer.create(this, Uri.fromFile(new File(audio.getPath())));
 
         mappingTv();
 
@@ -80,23 +91,22 @@ public class DetailAudioActivity extends AppCompatActivity implements View.OnCli
             }
         });
 
+
         mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
             @Override
             public void onPrepared(MediaPlayer mp) {
                 if (mediaPlayer != null) {
                     iv_detail_play_audio.setImageDrawable(getResources().getDrawable(R.drawable.ic_pause_circle_filled_black_24dp));
-
-                    mediaPlayer.start();
                     seekBarDetail.setMax(mediaPlayer.getDuration());
+                    mediaPlayer.start();
                     thread.start();
-
-
                 }
             }
         });
 
         if (mediaPlayer == null) {
             Toast.makeText(DetailAudioActivity.this, "Play audio fail !", Toast.LENGTH_SHORT).show();
+
             return;
         }
 
@@ -126,8 +136,6 @@ public class DetailAudioActivity extends AppCompatActivity implements View.OnCli
                 mediaPlayer.seekTo(seekBarDetail.getProgress());
             }
         });
-
-
         iv_detail_play_audio.setOnClickListener(this);
         iv_detail_next1_audio.setOnClickListener(this);
         iv_detail_next2_audio.setOnClickListener(this);
@@ -151,9 +159,6 @@ public class DetailAudioActivity extends AppCompatActivity implements View.OnCli
         tv_detail_dration_stop = findViewById(R.id.tv_detail_dration_stop);
 
         tv_detail_dration_stop.setText(fomatTime.format(mediaPlayer.getDuration()));
-
-
-
     }
 
     @Override
@@ -161,106 +166,101 @@ public class DetailAudioActivity extends AppCompatActivity implements View.OnCli
         super.onStop();
         if (mediaPlayer != null) {
             mediaPlayer.pause();
+            iv_detail_play_audio.setImageDrawable(getResources().getDrawable(R.drawable.ic_play_arrow_black_24dp));
         }
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (mediaPlayer != null) {
+        try {
             mediaPlayer.stop();
             mediaPlayer.release();
             mediaPlayer = null;
+        } catch (Exception e) {
         }
+
     }
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-        if (mediaPlayer != null) {
-            mediaPlayer.start();
-        }
-    }
 
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.iv_detail_play_audio:
-
-                mediaPlayer.seekTo(seekBarDetail.getProgress());
-                if (mediaPlayer.isPlaying()) {
+                if (this.mediaPlayer.isPlaying()) {
                     iv_detail_play_audio.setImageDrawable(getResources().getDrawable(R.drawable.ic_play_arrow_black_24dp));
-                    mediaPlayer.pause();
+                    this.mediaPlayer.pause();
                 } else {
                     iv_detail_play_audio.setImageDrawable(getResources().getDrawable(R.drawable.ic_pause_circle_filled_black_24dp));
-                    mediaPlayer.start();
+                    this.mediaPlayer.start();
                 }
+                this.mediaPlayer.seekTo(seekBarDetail.getProgress());
                 break;
 
             case R.id.iv_detail_next2_audio:
-                position++;
-                if (position > listFile.size() - 1) {
-                    position = 0;
+                this.position++;
+                if (this.position > listAudio.size() - 1) {
+                    this.position = 0;
                 }
-
+                this.audio = listAudio.get(position);
                 try {
-                    if (mediaPlayer != null && mediaPlayer.isPlaying()) {
-                        mediaPlayer.stop();
-                        mediaPlayer.release();
+                    if (this.mediaPlayer.isPlaying()) {
+                        this.mediaPlayer.stop();
+                        this.mediaPlayer.release();
                     }
-                    mediaPlayer = MediaPlayer.create(this, Uri.fromFile(listFile.get(position)));
-                    if (mediaPlayer != null) {
-                        mediaPlayer.start();
+                    this.mediaPlayer = MediaPlayer.create(this, Uri.fromFile(new File(audio.getPath())));
+
+                    if (this.mediaPlayer != null) {
+                        this.mediaPlayer.start();
+                        tv_detail_dration_stop.setText(fomatTime.format(mediaPlayer.getDuration()));
+
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-                if (mediaPlayer == null) {
+                if (this.mediaPlayer == null) {
                     Toast.makeText(DetailAudioActivity.this, "Play audio fail !", Toast.LENGTH_SHORT).show();
                     return;
                 }
-//
-//                tv_name_audio.setText(listFile.get(position).getName());
-//                tv_path_audio.setText(listFile.get(position).getPath());
-//                tv_size_audio.setText(CommonUtils.fomatSize(listFile.get(position).length()));
-//                tv_time_audio.setText(CommonUtils.fomatDate(listFile.get(position).lastModified()));
-//                tv_duration_audio.setText(CommonUtils.formatTime(mediaPlayer.getDuration()));
-//                tv_detail_dration_stop.setText(fomatTime.format(mediaPlayer.getDuration()));
 
                 iv_detail_play_audio.setImageDrawable(getResources().getDrawable(R.drawable.ic_pause_circle_filled_black_24dp));
+
+                fragmentDetailInformation.updateFragInfor(audio);
+
                 break;
 
             case R.id.iv_detail_prev2_audio:
-                position--;
-                if (position < 0) {
-                    position = listFile.size() - 1;
+                this.position--;
+
+                if (this.position < 0) {
+                    this.position = listAudio.size() - 1;
                 }
+                this.audio = listAudio.get(position);
                 try {
 
-                    if (mediaPlayer != null && mediaPlayer.isPlaying()) {
-                        mediaPlayer.stop();
-                        mediaPlayer.release();
+                    if (this.mediaPlayer != null && mediaPlayer.isPlaying()) {
+                        this.mediaPlayer.stop();
+                        this.mediaPlayer.release();
                     }
-                    mediaPlayer = MediaPlayer.create(this, Uri.fromFile(listFile.get(position)));
-                    if (mediaPlayer != null) {
-                        mediaPlayer.start();
+                    this.mediaPlayer = MediaPlayer.create(this, Uri.fromFile(new File(audio.getPath())));
+
+                    if (this.mediaPlayer != null) {
+                        this.mediaPlayer.start();
+                        tv_detail_dration_stop.setText(fomatTime.format(mediaPlayer.getDuration()));
+
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-                if (mediaPlayer == null) {
+                if (this.mediaPlayer == null) {
                     Toast.makeText(DetailAudioActivity.this, "Play audio fail !", Toast.LENGTH_SHORT).show();
                     return;
                 }
-//
-//                tv_name_audio.setText(listFile.get(position).getName());
-//                tv_path_audio.setText(listFile.get(position).getPath());
-//                tv_size_audio.setText(CommonUtils.fomatSize(listFile.get(position).length()));
-//                tv_time_audio.setText(CommonUtils.fomatDate(listFile.get(position).lastModified()));
-//                tv_duration_audio.setText(CommonUtils.formatTime(mediaPlayer.getDuration()));
-//                tv_detail_dration_stop.setText(fomatTime.format(mediaPlayer.getDuration()));
+
 
                 iv_detail_play_audio.setImageDrawable(getResources().getDrawable(R.drawable.ic_pause_circle_filled_black_24dp));
+                fragmentDetailInformation.updateFragInfor(audio);
+
                 break;
 //
 //            case R.id.iv_detail_next1_audio:
@@ -273,5 +273,33 @@ public class DetailAudioActivity extends AppCompatActivity implements View.OnCli
     }
 
 
+    @Override
+    public void sendPosition(int i) {
+        this.position = i;
+        this.audio = listAudio.get(position);
+        try {
+            if (this.mediaPlayer.isPlaying()) {
+                this.mediaPlayer.stop();
+                this.mediaPlayer.release();
+            }
+            this.mediaPlayer = MediaPlayer.create(this, Uri.fromFile(new File(audio.getPath())));
+
+            if (this.mediaPlayer != null) {
+                this.mediaPlayer.start();
+                tv_detail_dration_stop.setText(fomatTime.format(mediaPlayer.getDuration()));
+
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        if (this.mediaPlayer == null) {
+            Toast.makeText(DetailAudioActivity.this, "Play audio fail !", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        iv_detail_play_audio.setImageDrawable(getResources().getDrawable(R.drawable.ic_pause_circle_filled_black_24dp));
+
+        fragmentDetailInformation.updateFragInfor(audio);
+    }
 }
 

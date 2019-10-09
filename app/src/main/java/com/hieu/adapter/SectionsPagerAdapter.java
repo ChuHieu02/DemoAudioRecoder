@@ -9,6 +9,9 @@ import androidx.fragment.app.FragmentPagerAdapter;
 import com.hieu.fragment.FragmentDetailInformation;
 import com.hieu.fragment.FragmentDetailListAudio;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * A [FragmentPagerAdapter] that returns a fragment corresponding to
  * one of the sections/tabs/pages.
@@ -16,24 +19,21 @@ import com.hieu.fragment.FragmentDetailListAudio;
 public class SectionsPagerAdapter extends FragmentPagerAdapter {
 
     private final Context mContext;
+    private List<Fragment> fragments = new ArrayList<>();
 
-    public SectionsPagerAdapter(Context context, FragmentManager fm) {
+    public SectionsPagerAdapter(Context context, FragmentManager fm, List<Fragment> fragments) {
         super(fm);
         mContext = context;
+        this.fragments = fragments;
     }
 
     @Override
     public Fragment getItem(int position) {
 
-        switch (position) {
-            case 0:
-                return new FragmentDetailInformation();
-            case 1:
-                return new FragmentDetailListAudio();
-
-            default:
-                return null;
+        if(fragments == null || fragments.isEmpty()){
+            return null;
         }
+        return fragments.get(position);
 
     }
 
@@ -42,6 +42,6 @@ public class SectionsPagerAdapter extends FragmentPagerAdapter {
     @Override
     public int getCount() {
         // Show 2 total pages.
-        return 2;
+        return fragments.size();
     }
 }
